@@ -1,13 +1,17 @@
 import React from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
+import { ActivityIndicator, Pressable, PressableProps, StyleSheet, Text } from 'react-native';
 
-// Описание Props компонента
-type SubmitButtonProps = {
+// Кастомные пропсы, которые мы описали сами
+type CustomProps = {
   buttonText: string;
   onPress: () => void;
   disabled?: boolean;
   isLoading?: boolean;
 };
+
+// Исключаем из нативных пропсов те ключи, которые уже есть в CustomProps,
+// чтобы не было конфликта типов. Остальные собираем через ...rest.
+type SubmitButtonProps = CustomProps & Omit<PressableProps, keyof CustomProps>;
 
 // Универсальный компонент SubmitButton
 const SubmitButton: React.FC<SubmitButtonProps> = ({
@@ -15,12 +19,14 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
   onPress,
   disabled = false,
   isLoading = false,
+  ...rest
 }) => {
   // Определяем, должна ли кнопка быть заблокирована
   const isDisabled = disabled || isLoading;
 
   return (
     <Pressable
+      {...rest}
       style={({ pressed }) => [
         styles.button,
         isDisabled && styles.disabledButton,
