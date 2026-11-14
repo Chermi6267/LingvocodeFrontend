@@ -13,7 +13,7 @@ export function InputFieldExample() {
       <InputField
         value={email}
         onChangeText={setEmail}
-        variant="email"
+        type="email"
         placeholder="Email"
         autoComplete="email"
         returnKeyType="next"
@@ -24,7 +24,7 @@ export function InputFieldExample() {
         ref={passwordInputRef}
         value={password}
         onChangeText={setPassword}
-        variant="password"
+        type="password"
         placeholder="Пароль"
         autoComplete="current-password"
       />

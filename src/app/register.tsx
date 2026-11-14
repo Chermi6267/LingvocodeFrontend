@@ -1,5 +1,5 @@
 import { Controller, useForm, type RegisterOptions, type SubmitHandler } from 'react-hook-form';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Alert, Platform, StyleSheet, View } from 'react-native';
 
 import { InputField } from '@/components/InputField/InputField';
 import SubmitButton from '@/components/SubmitButton/SubmitButton';
@@ -52,8 +52,15 @@ export default function RegisterScreen() {
     await new Promise<void>((resolve) => {
       setTimeout(resolve, 1000);
     });
+
+    const message =
+      `Локальная проверка пройдена для ${data.email}. ` +
+      'Это демонстрация: аккаунт ещё не создан.';
+
     if (Platform.OS === 'web') {
-      window.alert(`Локальная проверка пройдена для ${data.email}`);
+      window.alert(message);
+    } else {
+      Alert.alert('Проверка завершена', message);
     }
   };
   return (
