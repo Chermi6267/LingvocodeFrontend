@@ -61,13 +61,14 @@ export default function LoginScreen() {
                     message: 'Некорректный формат электронной почты',
                   },
                 }}
-                render={({ field: { onChange, onBlur, value } }) => (
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <InputField
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     placeholder="Введите почту"
                     variant="email"
+                    error={error?.message}
                   />
                 )}
               />
@@ -78,13 +79,14 @@ export default function LoginScreen() {
                 rules={{
                   required: 'Введите пароль',
                 }}
-                render={({ field: { onChange, onBlur, value } }) => (
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                   <InputField
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     placeholder="Введите пароль"
                     variant="password"
+                    error={error?.message}
                   />
                 )}
               />

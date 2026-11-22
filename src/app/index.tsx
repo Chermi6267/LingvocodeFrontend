@@ -1,24 +1,15 @@
-import { useRouter } from 'expo-router';
-import { Button, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 
 export default function HomeScreen() {
-  const router = useRouter();
-
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title" style={styles.title}>
         Hello, LingvocodeFrontend!
       </ThemedText>
-      <Button
-        title="Логин"
-        onPress={() => {
-          router.push('/login');
-        }}
-      />
     </ThemedView>
   );
 }
