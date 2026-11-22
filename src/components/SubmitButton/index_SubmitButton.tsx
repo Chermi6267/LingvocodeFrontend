@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-// Путь к компоненту из папки app до папки components
-import SubmitButton from '../components/SubmitButton/SubmitButton';
+import SubmitButton from '@/components/SubmitButton/SubmitButton';
 
 export default function IndexSubmitButton() {
   const [isLoading, setIsLoading] = useState(false);

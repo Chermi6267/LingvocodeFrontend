@@ -7,14 +7,20 @@ import {
   type TextInputProps,
 } from 'react-native';
 
+import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
+import { ThemedText } from '../themed-text';
 import { ShowPasswordButton } from './ShowPassButt';
 
-type InputFieldProps = Omit<TextInputProps, 'value' | 'onChangeText' | 'secureTextEntry'> & {
+type InputFieldProps = Omit<
+  TextInputProps,
+  'value' | 'onChangeText' | 'secureTextEntry' | 'errorText'
+> & {
   value: string;
   onChangeText: (text: string) => void;
   variant: 'email' | 'password';
+  error: string | undefined;
 };
 
 const styles = StyleSheet.create({
@@ -40,10 +46,15 @@ const styles = StyleSheet.create({
     height: 52,
     justifyContent: 'center',
   },
+  error: {
+    marginTop: Spacing.one,
+    paddingHorizontal: Spacing.one,
+    color: 'red',
+  },
 });
 
 export const InputField = forwardRef<TextInputInstance, InputFieldProps>(
-  ({ value, onChangeText, variant, ...rest }, ref) => {
+  ({ value, onChangeText, variant, error, ...rest }, ref) => {
     const theme = useTheme();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const isPassword = variant === 'password';
@@ -73,6 +84,11 @@ export const InputField = forwardRef<TextInputInstance, InputFieldProps>(
             />
           </View>
         )}
+        {error ? (
+          <ThemedText type="small" style={styles.error}>
+            {error}
+          </ThemedText>
+        ) : null}
       </View>
     );
   },
