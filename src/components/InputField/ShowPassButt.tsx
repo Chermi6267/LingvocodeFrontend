@@ -5,14 +5,21 @@ import { useTheme } from '@/hooks/use-theme';
 type ShowPasswordButtonProps = {
   isPasswordVisible: boolean;
   onPress: () => void;
+  disabled?: boolean;
 };
 
-export function ShowPasswordButton({ isPasswordVisible, onPress }: ShowPasswordButtonProps) {
+export function ShowPasswordButton({
+  isPasswordVisible,
+  onPress,
+  disabled = false,
+}: ShowPasswordButtonProps) {
   const theme = useTheme();
 
   return (
     <Pressable
       accessibilityLabel={isPasswordVisible ? 'Скрыть пароль' : 'Показать пароль'}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       onPress={onPress}
       style={styles.button}>
       <Text style={[styles.text, { color: theme.textSecondary }]}>
@@ -28,6 +35,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 14,
-    fontWeight: 600,
+    fontWeight: '600',
   },
 });

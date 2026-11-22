@@ -20,7 +20,9 @@ type InputFieldProps = Omit<
   value: string;
   onChangeText: (text: string) => void;
   variant: 'email' | 'password';
+  showPasswordButton?: boolean;
   error: string | undefined;
+  disabled?: boolean;
 };
 
 const styles = StyleSheet.create({
@@ -51,10 +53,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.one,
     color: 'red',
   },
+  disabledInput: {
+    opacity: 0.6,
+  },
 });
 
 export const InputField = forwardRef<TextInputInstance, InputFieldProps>(
-  ({ value, onChangeText, variant, error, ...rest }, ref) => {
+  (
+    { value, onChangeText, variant, error, showPasswordButton = true, disabled = false, ...rest },
+    ref,
+  ) => {
     const theme = useTheme();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const isPassword = variant === 'password';
@@ -73,10 +81,10 @@ export const InputField = forwardRef<TextInputInstance, InputFieldProps>(
           keyboardType={isPassword ? 'default' : 'email-address'}
           secureTextEntry={isPassword && !isPasswordVisible}
           autoCapitalize="none"
-          style={[styles.input, { color: theme.text }]}
+          style={[styles.input, { color: theme.text }, disabled && styles.disabledInput]}
         />
 
-        {isPassword && (
+        {isPassword && showPasswordButton && (
           <View style={styles.showPasswordButton}>
             <ShowPasswordButton
               isPasswordVisible={isPasswordVisible}
