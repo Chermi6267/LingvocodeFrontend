@@ -48,7 +48,7 @@ module.exports = [
       'react-native/split-platform-components': 'error',
       'react-native/no-raw-text': [
         'error',
-        { skip: ['ThemedText', 'TabButton', 'NativeTabs.Trigger.Label'] },
+        { skip: ['ThemedText', 'Text', 'Button', 'TabButton', 'NativeTabs.Trigger.Label'] },
       ],
     },
   },
