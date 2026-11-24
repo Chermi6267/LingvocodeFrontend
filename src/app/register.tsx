@@ -80,7 +80,7 @@ export default function RegisterScreen() {
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder="Введите почту"
-              type="email"
+              variant="email"
               autoComplete="email"
               error={errors.email?.message}
               disabled={isSubmitting}
@@ -104,7 +104,7 @@ export default function RegisterScreen() {
               }}
               onBlur={onBlur}
               placeholder="Введите пароль"
-              type="password"
+              variant="password"
               autoComplete="new-password"
               error={errors.password?.message}
               disabled={isSubmitting}
@@ -122,7 +122,7 @@ export default function RegisterScreen() {
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder="Повторите пароль"
-              type="password"
+              variant="password"
               autoComplete="new-password"
               error={errors.confirmPassword?.message}
               disabled={isSubmitting}
