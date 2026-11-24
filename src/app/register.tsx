@@ -1,10 +1,9 @@
 import { Controller, useForm, type RegisterOptions, type SubmitHandler } from 'react-hook-form';
 import { Alert, Platform, StyleSheet, View } from 'react-native';
 
-import { InputField } from '@/components/InputField/InputField';
-import SubmitButton from '@/components/SubmitButton/SubmitButton';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Button, TextInput } from '@/shared/ui';
 
 type RegisterFormValues = {
   email: string;
@@ -74,16 +73,19 @@ export default function RegisterScreen() {
           name="email"
           rules={emailRules}
           render={({ field: { onChange, onBlur, value, ref } }) => (
-            <InputField
+            <TextInput
               ref={ref}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder="Введите почту"
-              variant="email"
+              keyboardType="email-address"
+              autoCapitalize="none"
               autoComplete="email"
               error={errors.email?.message}
+              shakeOnError
               disabled={isSubmitting}
+              containerStyle={styles.field}
             />
           )}
         />
@@ -92,7 +94,7 @@ export default function RegisterScreen() {
           name="password"
           rules={passwordRules}
           render={({ field: { onChange, onBlur, value, ref } }) => (
-            <InputField
+            <TextInput
               ref={ref}
               value={value}
               onChangeText={(text) => {
@@ -104,10 +106,15 @@ export default function RegisterScreen() {
               }}
               onBlur={onBlur}
               placeholder="Введите пароль"
-              variant="password"
+              keyboardType="default"
+              secureTextEntry
+              showPasswordToggle
+              autoCapitalize="none"
               autoComplete="new-password"
               error={errors.password?.message}
+              shakeOnError
               disabled={isSubmitting}
+              containerStyle={styles.field}
             />
           )}
         />
@@ -116,25 +123,26 @@ export default function RegisterScreen() {
           name="confirmPassword"
           rules={confirmPasswordRules}
           render={({ field: { onChange, onBlur, value, ref } }) => (
-            <InputField
+            <TextInput
               ref={ref}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder="Повторите пароль"
-              variant="password"
+              keyboardType="default"
+              secureTextEntry
+              autoCapitalize="none"
               autoComplete="new-password"
               error={errors.confirmPassword?.message}
+              shakeOnError
               disabled={isSubmitting}
+              containerStyle={styles.field}
             />
           )}
         />
-        <SubmitButton
-          buttonText="Зарегистрироваться"
-          onPress={handleSubmit(submitHandler)}
-          disabled={isSubmitting}
-          isLoading={isSubmitting}
-        />
+        <Button fullWidth loading={isSubmitting} onPress={() => void handleSubmit(submitHandler)()}>
+          Зарегистрироваться
+        </Button>
       </View>
     </ThemedView>
   );
@@ -155,5 +163,8 @@ const styles = StyleSheet.create({
     maxWidth: 440,
     paddingHorizontal: 24,
     paddingVertical: 24,
+  },
+  field: {
+    marginBottom: 12,
   },
 });

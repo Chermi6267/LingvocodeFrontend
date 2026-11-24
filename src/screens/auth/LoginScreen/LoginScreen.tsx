@@ -1,10 +1,9 @@
 import { Controller, useForm, type SubmitHandler } from 'react-hook-form';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 
 import { AuthScreenLayout } from '@/components/AuthScreenLayout/AuthScreenLayout';
-import { InputField } from '@/components/InputField/InputField';
-import SubmitButton from '@/components/SubmitButton/SubmitButton';
 import { Spacing } from '@/constants/theme';
+import { Button, TextInput } from '@/shared/ui';
 
 import { EMAIL_PATTERN } from '../constants';
 
@@ -47,16 +46,19 @@ export default function LoginScreen() {
           },
         }}
         render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
-          <InputField
+          <TextInput
             ref={ref}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
             placeholder="Введите почту"
-            variant="email"
+            keyboardType="email-address"
+            autoCapitalize="none"
             autoComplete="email"
             error={error?.message}
+            shakeOnError
             disabled={isSubmitting}
+            containerStyle={styles.field}
           />
         )}
       />
@@ -68,33 +70,34 @@ export default function LoginScreen() {
           required: 'Введите пароль',
         }}
         render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
-          <InputField
+          <TextInput
             ref={ref}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
             placeholder="Введите пароль"
-            variant="password"
+            keyboardType="default"
+            secureTextEntry
+            showPasswordToggle
+            autoCapitalize="none"
             autoComplete="current-password"
             error={error?.message}
+            shakeOnError
             disabled={isSubmitting}
+            containerStyle={styles.field}
           />
         )}
       />
 
-      <View style={styles.submitButton}>
-        <SubmitButton
-          buttonText="Войти"
-          onPress={handleSubmit(submitHandler)}
-          isLoading={isSubmitting}
-        />
-      </View>
+      <Button fullWidth loading={isSubmitting} onPress={() => void handleSubmit(submitHandler)()}>
+        Войти
+      </Button>
     </AuthScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  submitButton: {
-    marginTop: Spacing.two,
+  field: {
+    marginBottom: Spacing.two,
   },
 });

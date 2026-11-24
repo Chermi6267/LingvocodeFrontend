@@ -1,88 +1,25 @@
-import type { ReactNode } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
-import { createStyles } from '@/shared/lib/styles';
 import { useTheme } from '@/shared/lib/theme';
 
-import { resolveActionPalette, type ActionAccent, type ActionVariant } from '../actionPalette';
-import { Pressable3D, type Pressable3DProps } from '../Pressable3D';
+import { Pressable3D } from '../Pressable3D';
 import { Text } from '../Text';
-
-export type ButtonVariant = ActionVariant;
-export type ButtonAccent = ActionAccent;
-
-export interface ButtonProps extends Omit<
-  Pressable3DProps,
-  | 'children'
-  | 'faceColor'
-  | 'lipColor'
-  | 'borderColor'
-  | 'borderWidth'
-  | 'hoverFaceColor'
-  | 'hoverBorderColor'
-  | 'faceStyle'
-> {
-  readonly children: ReactNode;
-  /** Filled accent surface or white/grey outlined surface. */
-  readonly variant?: ButtonVariant;
-  /** Accent triad used by the `solid` variant. Ignored by `outline`. */
-  readonly accent?: ButtonAccent;
-  readonly fullWidth?: boolean;
-  readonly loading?: boolean;
-  readonly leftIcon?: ReactNode;
-  readonly rightIcon?: ReactNode;
-}
-
-const useStyles = createStyles((tokens) => ({
-  root: {
-    alignSelf: 'flex-start',
-  },
-  fullWidth: {
-    alignSelf: 'stretch',
-  },
-  face: {
-    minHeight: tokens.components.button.minHeight,
-    paddingHorizontal: tokens.components.button.paddingHorizontal,
-    paddingVertical: tokens.components.button.paddingVertical,
-    justifyContent: 'center',
-    userSelect: 'none',
-  },
-  label: {
-    userSelect: 'none',
-  },
-  content: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: tokens.spacing.sm,
-  },
-  hidden: {
-    opacity: 0,
-  },
-  spinnerOverlay: {
-    ...StyleSheet.absoluteFill,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-}));
+import { resolveButtonPalette, useButtonStyles } from './Button.styles';
+import type { ButtonProps } from './Button.types';
 
 /**
- * Primary action primitive built on Pressable3D.
+ * Themed action button built on Pressable3D.
  *
- * - `solid` keeps the accent triad (base face / lip edge / white label);
- * - `outline` uses the 2px border + 4px grey lip combination;
- * - disabled is always flat (no lip) with the disabled token pair;
- * - loading keeps the lip and label width, blocks input and exposes `busy`.
+ * - four semantic variants (`primary`, `secondary`, `danger`, `ghost`);
+ * - press/release is an animated translate of the face over a 2.5D lip, so no
+ *   layout metric ever changes and neighbours cannot shift;
+ * - `disabled` is flat and non-interactive; `loading` keeps the lip and the
+ *   label in place (opacity only) and overlays a themed spinner;
+ * - input is blocked while busy and the a11y state exposes `disabled`/`busy`.
  */
 export function Button({
   children,
-  variant = 'solid',
-  accent = 'primary',
+  variant = 'primary',
   fullWidth = false,
   loading = false,
   leftIcon,
@@ -93,9 +30,9 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const { tokens } = useTheme();
-  const styles = useStyles();
+  const styles = useButtonStyles();
 
-  const palette = resolveActionPalette(tokens, variant, accent, disabled);
+  const palette = resolveButtonPalette(tokens, variant, disabled);
   const isBlocked = disabled || loading;
 
   const rootStyle = fullWidth ? [styles.root, styles.fullWidth, style] : [styles.root, style];
@@ -104,7 +41,7 @@ export function Button({
     <Pressable3D
       {...rest}
       disabled={isBlocked}
-      showLip={!disabled}
+      showLip={palette.showLip}
       faceColor={palette.face}
       lipColor={palette.lip}
       borderColor={palette.border}

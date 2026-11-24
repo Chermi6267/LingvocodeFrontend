@@ -13,8 +13,8 @@ export interface ActionPalette {
 }
 
 /**
- * Shared colour resolution for filled/outlined action surfaces.
- * Button and IconButton must stay visually in sync, so neither owns this map.
+ * Colour resolution for the legacy filled/outlined action surfaces used by
+ * IconButton. Button uses the semantic variants from `Button.styles.ts`.
  */
 export function resolveActionPalette(
   tokens: ThemeTokens,

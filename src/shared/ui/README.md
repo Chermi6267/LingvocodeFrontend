@@ -1,7 +1,8 @@
 # UI-кит: фундамент Tactile 2.5D / Juicy UI
 
-Этот каталог содержит только **фундамент** визуальной системы. Экраны и легаси-компоненты
-(`SubmitButton`, `InputField`, `ThemedText`) сюда не мигрировали.
+Этот каталог содержит фундамент визуальной системы и первые мигрированные контролы:
+`Button` и `TextInput`. Легаси `SubmitButton` / `InputField` удалены; экраны авторизации
+используют публичный API из `@/shared/ui`.
 
 ## Слои
 
@@ -13,10 +14,11 @@ shared/lib/motion        usePressDepth / useShake / usePopIn                    
 shared/ui/TactileLayers  единственная реализация нижней объёмной грани
 shared/ui/Pressable3D    интерактивная 2.5D-поверхность (press + hover + focus)
 shared/ui/TactileSurface неинтерактивная 2.5D-поверхность (статические карточки)
-shared/ui/Button         первый потребитель механизма
+shared/ui/Button         primary / secondary / danger / ghost, loading, 2.5D
 shared/ui/IconButton     icon-only действие
 shared/ui/Card           карточка, интерактивная при наличии onPress
 shared/ui/Text           типографический примитив на токенах
+shared/ui/TextInput      утопленное поле: focus/error/disabled, shake, пароль
 ```
 
 Зависимости идут только вниз: `ui → lib → config`. Слой `shared` не импортирует
@@ -62,11 +64,21 @@ pop-in показывается сразу в масштабе 1.
 ## Примеры
 
 ```tsx
-import { Button, Card, IconButton, Text } from '@/shared/ui';
+import { Button, Card, IconButton, Text, TextInput } from '@/shared/ui';
 
-<Button accent="primary" onPress={submit}>Продолжить</Button>
-<Button variant="outline" loading={isSubmitting}>Сохранить</Button>
-<Button accent="danger" disabled>Удалить</Button>
+<Button onPress={submit}>Продолжить</Button>
+<Button variant="secondary" loading={isSubmitting}>Сохранить</Button>
+<Button variant="danger" disabled>Удалить</Button>
+<Button variant="ghost" fullWidth>Отмена</Button>
+
+<TextInput
+  placeholder="Введите почту"
+  keyboardType="email-address"
+  value={email}
+  onChangeText={setEmail}
+  error={errors.email?.message}
+  shakeOnError
+/>
 
 <IconButton
   accessibilityLabel="Закрыть"
@@ -80,8 +92,18 @@ import { Button, Card, IconButton, Text } from '@/shared/ui';
 ```
 
 Провайдер темы обязателен: компоненты используют `useTheme()` из `shared/lib/theme`.
-`src/providers/AppProviders.tsx` уже содержит нужный `ThemeProvider`; его подключение
-к `app/_layout.tsx` — отдельный шаг интеграции.
+`src/providers/AppProviders.tsx` подключён в корневом `app/_layout.tsx` и синхронизирует
+навигационную тему с токенами.
+
+## TextInput
+
+- утопленный фон `bgSurface`, рамка `2px` из `borderWidths.default`;
+- фокус — `secondary.base`, ошибка — `danger.base` на фоне `danger.tint`;
+- `error` содержит сообщение и включает состояние ошибки, `shakeKey` позволяет
+  повторить shake для того же сообщения;
+- `showPasswordToggle` добавляет встроенную кнопку видимости пароля;
+- поддерживаютсяcontrolled (`value` + `onChangeText`) и uncontrolled (`defaultValue`) ввод;
+- строка ошибки занимает заранее зарезервированную строку — появление ошибки не двигает соседние поля.
 
 ## Правила для будущих компонентов
 
@@ -96,7 +118,7 @@ import { Button, Card, IconButton, Text } from '@/shared/ui';
 
 ## Что намеренно не сделано
 
-- Input, ChoiceCard, ProgressBar, FeedbackSheet, Badge — следующий этап.
-- Миграция `screens/auth` и `app/index.tsx`.
+- ChoiceCard, ProgressBar, FeedbackSheet, Badge — следующий этап.
+- Миграция оставшихся легаси-компонентов (`ThemedText`, `ThemedView`) и `app/index.tsx`.
 - Загрузка шрифтов Nunito/Rubik через `expo-font` (типографические токены уже ссылаются
   на них; без загрузки платформа использует fallback-шрифт).
