@@ -1,1 +1,8 @@
-export { Text, type TextProps, type TextTone, type TextVariant } from './Text';
+export { Text } from './Text';
+export type {
+  TextFont,
+  TextProps,
+  TextTone,
+  TextVariant,
+  TypographyVariantToken,
+} from './Text.types';

@@ -6,6 +6,10 @@ import type { TextStyle } from 'react-native';
  */
 export type ThemeColor = `#${string}` | `rgba(${number}, ${number}, ${number}, ${number})`;
 
+/** Names of the six accent triads defined by the design specification. */
+export type AccentTokenName =
+  'primary' | 'secondary' | 'danger' | 'warning' | 'streak' | 'legendary';
+
 /** A semantic accent exists as a base / lip / tint triad. */
 export interface AccentColorTokens {
   readonly base: ThemeColor;
@@ -45,6 +49,8 @@ export interface ThemeColors {
   readonly textSecondary: ThemeColor;
   readonly bgDisabled: ThemeColor;
   readonly textDisabled: ThemeColor;
+  /** Scrim behind modals and bottom sheets. */
+  readonly backdrop: ThemeColor;
 
   /** Explicit hover color from the Duolingo CTA example. */
   readonly primaryHover: ThemeColor;
@@ -112,6 +118,8 @@ export interface SpacingTokens {
   readonly huge: number;
 }
 
+export type SpacingToken = keyof SpacingTokens;
+
 export interface RadiusTokens {
   readonly sm: number;
   readonly md: number;
@@ -119,11 +127,15 @@ export interface RadiusTokens {
   readonly pill: number;
 }
 
+export type RadiusToken = keyof RadiusTokens;
+
 export interface BorderWidthTokens {
   readonly none: number;
   readonly default: number;
   readonly lip: number;
 }
+
+export type BorderWidthToken = keyof BorderWidthTokens;
 
 export interface IconSizeTokens {
   readonly xs: number;
@@ -131,6 +143,8 @@ export interface IconSizeTokens {
   readonly md: number;
   readonly lg: number;
 }
+
+export type IconSizeToken = keyof IconSizeTokens;
 
 export interface ComponentSizeTokens {
   readonly button: {
@@ -157,17 +171,44 @@ export interface ComponentSizeTokens {
   readonly iconButton: {
     readonly size: number;
   };
+  /** Shared geometry for modal, toast and feedback overlays. */
+  readonly overlay: {
+    readonly maxWidth: number;
+    readonly feedbackIconSize: number;
+    readonly enterOffsetY: number;
+  };
+  /** Preferred width of centered form/layout columns. */
+  readonly form: {
+    readonly maxWidth: number;
+  };
+  /** Shared geometry for form controls (hit targets, indicators, tracks). */
+  readonly control: {
+    readonly hitTarget: number;
+    readonly indicator: number;
+    readonly switchWidth: number;
+    readonly switchHeight: number;
+    readonly switchThumb: number;
+    readonly sliderTrackHeight: number;
+    readonly sliderThumb: number;
+    readonly optionHeight: number;
+  };
 }
 
 /** Geometry of the Tactile 2.5D effect. Blur is always disabled by design. */
 export interface EffectTokens {
   readonly shadowBlur: number;
   readonly lipHeight: number;
-  readonly pressedOffsetY: number;
 }
 
 export type CubicBezier = readonly [number, number, number, number];
 export type MotionEasing = 'ease' | CubicBezier;
+
+/** Physics used by sheet and overlay transitions. */
+export interface SpringConfigToken {
+  readonly damping: number;
+  readonly stiffness: number;
+  readonly mass: number;
+}
 
 export interface MotionTokens {
   readonly press: {
@@ -179,8 +220,6 @@ export interface MotionTokens {
     readonly easing: MotionEasing;
   };
   readonly popIn: {
-    readonly minDuration: number;
-    readonly maxDuration: number;
     readonly duration: number;
     readonly fromScale: number;
     readonly overshootScale: number;
@@ -189,16 +228,50 @@ export interface MotionTokens {
   };
   readonly spring: {
     readonly duration: number;
-    readonly overshootScale: number;
     readonly easing: MotionEasing;
   };
   readonly progressFill: {
     readonly duration: number;
     readonly easing: MotionEasing;
   };
+  /** Continuous rotation used by the loading indicator. */
+  readonly spinner: {
+    readonly duration: number;
+  };
+  /** Opacity pulse used by placeholder blocks. */
+  readonly skeleton: {
+    readonly duration: number;
+    readonly minOpacity: number;
+  };
   readonly shake: {
     readonly duration: number;
     readonly offsets: readonly [number, number, number, number, number];
+  };
+  /** Backdrop and content fades shared by modal, sheet and toast overlays. */
+  readonly overlay: {
+    readonly backdropIn: number;
+    readonly backdropOut: number;
+    readonly backdropRestore: number;
+    readonly contentIn: number;
+  };
+  /** Bottom-sheet motion and gesture thresholds. */
+  readonly sheet: {
+    readonly spring: SpringConfigToken;
+    readonly slideOut: number;
+    readonly maxHeightRatio: number;
+    readonly minVisibleRatio: number;
+    readonly dragStartThreshold: number;
+    readonly backdropFadeRatio: number;
+    readonly closeDistanceRatio: number;
+    readonly maxCloseDistance: number;
+    readonly closeVelocityThreshold: number;
+  };
+  /** Toast entrance and lifetime. */
+  readonly toast: {
+    readonly enter: number;
+    readonly slideIn: number;
+    readonly duration: number;
+    readonly hitSlop: number;
   };
 }
 

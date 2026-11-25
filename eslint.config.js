@@ -43,13 +43,20 @@ module.exports = [
       'react/prop-types': 'off',
       'react-native/no-unused-styles': 'error',
       'react-native/no-inline-styles': 'error',
-      'react-native/no-color-literals': 'off',
+      'react-native/no-color-literals': 'error',
       'react-native/no-single-element-style-arrays': 'error',
       'react-native/split-platform-components': 'error',
       'react-native/no-raw-text': [
         'error',
-        { skip: ['ThemedText', 'Text', 'Button', 'TabButton', 'NativeTabs.Trigger.Label'] },
+        { skip: ['Text', 'Button', 'TabButton', 'NativeTabs.Trigger.Label'] },
       ],
+    },
+  },
+  {
+    files: ['src/shared/config/theme/**/*.{ts,tsx}'],
+    rules: {
+      // Theme files are the single source of truth for color literals.
+      'react-native/no-color-literals': 'off',
     },
   },
   {
@@ -70,18 +77,6 @@ module.exports = [
     files: ['scripts/**/*.js'],
     rules: {
       'no-console': 'off',
-    },
-  },
-  {
-    files: ['src/components/themed-text.tsx'],
-    rules: {
-      'react-native/no-unused-styles': 'off',
-    },
-  },
-  {
-    files: ['src/hooks/use-color-scheme.web.ts'],
-    rules: {
-      'react-hooks/set-state-in-effect': 'off',
     },
   },
   {

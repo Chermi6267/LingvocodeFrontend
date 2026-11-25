@@ -13,7 +13,6 @@ export interface ButtonProps extends Omit<
   | 'borderColor'
   | 'borderWidth'
   | 'hoverFaceColor'
-  | 'hoverBorderColor'
   | 'faceStyle'
 > {
   /** Visible label. Also becomes the accessibility label of the button. */

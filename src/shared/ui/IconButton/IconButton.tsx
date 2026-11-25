@@ -24,7 +24,6 @@ export interface IconButtonProps extends Omit<
   | 'borderColor'
   | 'borderWidth'
   | 'hoverFaceColor'
-  | 'hoverBorderColor'
   | 'faceStyle'
   | 'radius'
 > {

@@ -1,86 +1,30 @@
-import type { ReactNode } from 'react';
+import { View, type ViewStyle } from 'react-native';
 
-import type { ThemeColor, ThemeTokens } from '@/shared/config/theme';
-import { createStyles } from '@/shared/lib/styles';
 import { useTheme } from '@/shared/lib/theme';
 
-import { Pressable3D, type Pressable3DProps } from '../Pressable3D';
+import { Pressable3D } from '../Pressable3D';
 import { TactileSurface } from '../TactileSurface';
-
-export interface CardProps extends Omit<
-  Pressable3DProps,
-  | 'children'
-  | 'faceColor'
-  | 'lipColor'
-  | 'borderColor'
-  | 'borderWidth'
-  | 'hoverFaceColor'
-  | 'hoverBorderColor'
-  | 'faceStyle'
-  | 'radius'
-  | 'accessibilityRole'
-> {
-  readonly children: ReactNode;
-  readonly selected?: boolean;
-  /** Defaults to `tokens.radii.lg`. */
-  readonly radius?: number;
-}
-
-interface CardPalette {
-  readonly face: ThemeColor;
-  readonly lip: ThemeColor;
-  readonly border: ThemeColor;
-  readonly hoverFace?: ThemeColor;
-}
-
-function resolveCardPalette(
-  tokens: ThemeTokens,
-  selected: boolean,
-  disabled: boolean,
-): CardPalette {
-  if (disabled) {
-    return {
-      face: tokens.colors.bgSurface,
-      lip: tokens.colors.borderLip,
-      border: tokens.colors.borderDefault,
-    };
-  }
-
-  if (selected) {
-    return {
-      face: tokens.colors.choiceCardSelected.background,
-      lip: tokens.colors.choiceCardSelected.lip,
-      border: tokens.colors.choiceCardSelected.border,
-    };
-  }
-
-  return {
-    face: tokens.colors.bgElevated,
-    lip: tokens.colors.borderLip,
-    border: tokens.colors.borderDefault,
-    hoverFace: tokens.colors.bgSurface,
-  };
-}
-
-const useStyles = createStyles((tokens) => ({
-  root: {
-    alignSelf: 'stretch',
-  },
-  face: {
-    padding: tokens.components.choiceCard.padding,
-  },
-}));
+import { Text } from '../Text';
+import { resolveCardPalette, useCardStyles } from './Card.styles';
+import type { CardProps } from './Card.types';
 
 /**
- * Tactile card surface.
+ * Tactile card surface with two modes:
  *
- * With `onPress` it becomes a button-like Pressable3D (hover, focus ring,
- * selected/disabled a11y state). Without it the card keeps the 3D edge but is
- * rendered as a static View, so it never enters the focus order.
+ * - `info` (default without `onPress`) — static informational card;
+ * - `choice` — interactive answer tile with hover/press, selected, correct and
+ *   wrong states.
+ *
+ * The 2px border and the 4px bottom edge are always present, and state changes
+ * only swap colours, so neighbours never move. An optional 28×28 badge can show
+ * an answer number or a hotkey.
  */
 export function Card({
   children,
+  variant,
   selected = false,
+  status,
+  badge,
   radius,
   disabled = false,
   onPress,
@@ -89,25 +33,49 @@ export function Card({
   ...rest
 }: CardProps) {
   const { tokens } = useTheme();
-  const styles = useStyles();
+  const styles = useCardStyles();
 
-  const palette = resolveCardPalette(tokens, selected, disabled);
+  const interactive = (variant ?? (typeof onPress === 'function' ? 'choice' : 'info')) === 'choice';
+  const palette = resolveCardPalette(tokens, {
+    selected,
+    status,
+    disabled,
+    interactive,
+  });
   const resolvedRadius = radius ?? tokens.radii.lg;
-  const interactive = typeof onPress === 'function';
+
+  const badgeStyle: ViewStyle = {
+    backgroundColor: palette.badgeBackground,
+    borderColor: palette.badgeBorder,
+  };
+
+  const content = (
+    <View style={styles.content}>
+      {badge !== undefined ? (
+        <View style={[styles.badge, badgeStyle]} pointerEvents="none">
+          <Text variant="badge" color={palette.content}>
+            {badge}
+          </Text>
+        </View>
+      ) : null}
+      <View style={styles.body}>{children}</View>
+    </View>
+  );
 
   if (!interactive) {
     return (
       <TactileSurface
+        {...rest}
         faceColor={palette.face}
         lipColor={palette.lip}
         borderColor={palette.border}
         borderWidth={tokens.borderWidths.default}
         radius={resolvedRadius}
-        showLip={!disabled}
+        showLip={palette.showLip}
         faceStyle={styles.face}
         style={[styles.root, style]}
-        accessibilityState={{ selected, disabled }}>
-        {children}
+        accessibilityState={{ ...accessibilityState, selected, disabled }}>
+        {content}
       </TactileSurface>
     );
   }
@@ -123,11 +91,12 @@ export function Card({
       borderWidth={tokens.borderWidths.default}
       hoverFaceColor={palette.hoverFace}
       radius={resolvedRadius}
+      showLip={palette.showLip}
       faceStyle={styles.face}
       style={[styles.root, style]}
       accessibilityRole="button"
       accessibilityState={{ ...accessibilityState, selected, disabled }}>
-      {children}
+      {content}
     </Pressable3D>
   );
 }

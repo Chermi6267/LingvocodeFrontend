@@ -1,9 +1,11 @@
 import { useCallback, useEffect } from 'react';
+import type { ViewStyle } from 'react-native';
 import {
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
   withTiming,
+  type AnimatedStyle,
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/shared/lib/theme';
@@ -17,23 +19,28 @@ export interface UsePressDepthOptions {
   readonly lipHeight: number;
 }
 
+export interface UsePressDepthResult {
+  readonly animatedStyle: AnimatedStyle<ViewStyle>;
+  readonly pressIn: () => void;
+  readonly pressOut: () => void;
+}
+
 /**
  * Drives the Tactile 2.5D press.
  *
- * Press-in is a hard 100ms ease; release uses the spring curve (with a small
- * overshoot). The shared value is expressed as `0..1` so any visual layer can
- * consume it (translation today, scale or color in the future).
- *
- * The consumer only has to animate `transform`. Because the lip itself lives
- * outside the layout flow, animating the face never triggers a layout pass.
+ * Both press-in and release use the hard 100ms ease from the design spec: a
+ * button must never feel sticky or bounce above its resting position. The lip
+ * lives outside the layout flow, so animating the face never triggers layout.
  */
-export function usePressDepth({ disabled = false, lipHeight }: UsePressDepthOptions) {
+export function usePressDepth({
+  disabled = false,
+  lipHeight,
+}: UsePressDepthOptions): UsePressDepthResult {
   const { tokens } = useTheme();
   const reduceMotion = useReducedMotion();
   const depth = useSharedValue(0);
 
-  const { duration: releaseDuration, easing: releaseEasing } = tokens.motion.spring;
-  const { duration: pressDuration, easing: pressEasing } = tokens.motion.press;
+  const { duration, easing } = tokens.motion.press;
 
   useEffect(() => {
     if (disabled) {
@@ -41,35 +48,28 @@ export function usePressDepth({ disabled = false, lipHeight }: UsePressDepthOpti
     }
   }, [depth, disabled]);
 
-  const pressIn = useCallback(() => {
-    if (disabled) {
-      return;
-    }
+  const animateTo = useCallback(
+    (target: 0 | 1) => {
+      if (disabled) {
+        return;
+      }
 
-    depth.set(
-      withTiming(1, {
-        duration: reduceMotion ? 0 : pressDuration,
-        easing: resolveEasing(pressEasing),
-      }),
-    );
-  }, [depth, disabled, pressDuration, pressEasing, reduceMotion]);
+      depth.set(
+        withTiming(target, {
+          duration: reduceMotion ? 0 : duration,
+          easing: resolveEasing(easing),
+        }),
+      );
+    },
+    [depth, disabled, duration, easing, reduceMotion],
+  );
 
-  const pressOut = useCallback(() => {
-    if (disabled) {
-      return;
-    }
-
-    depth.set(
-      withTiming(0, {
-        duration: reduceMotion ? 0 : releaseDuration,
-        easing: resolveEasing(releaseEasing),
-      }),
-    );
-  }, [depth, disabled, reduceMotion, releaseDuration, releaseEasing]);
+  const pressIn = useCallback(() => animateTo(1), [animateTo]);
+  const pressOut = useCallback(() => animateTo(0), [animateTo]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: depth.get() * lipHeight }],
   }));
 
-  return { depth, animatedStyle, pressIn, pressOut };
+  return { animatedStyle, pressIn, pressOut };
 }

@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import type { ViewStyle } from 'react-native';
 import {
   Easing,
   useAnimatedStyle,
@@ -6,9 +7,15 @@ import {
   useSharedValue,
   withSequence,
   withTiming,
+  type AnimatedStyle,
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/shared/lib/theme';
+
+export interface UseShakeResult {
+  readonly animatedStyle: AnimatedStyle<ViewStyle>;
+  readonly shake: () => void;
+}
 
 /**
  * Error shake preset: translateX(-6 → 6 → -4 → 4 → 0) in 300ms.
@@ -16,7 +23,7 @@ import { useTheme } from '@/shared/lib/theme';
  * The offsets and total duration come from `tokens.motion.shake`. The whole
  * sequence is skipped when the OS requests reduced motion.
  */
-export function useShake() {
+export function useShake(): UseShakeResult {
   const { tokens } = useTheme();
   const reduceMotion = useReducedMotion();
   const translateX = useSharedValue(0);

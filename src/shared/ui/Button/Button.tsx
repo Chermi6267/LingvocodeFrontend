@@ -1,8 +1,9 @@
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 
 import { useTheme } from '@/shared/lib/theme';
 
 import { Pressable3D } from '../Pressable3D';
+import { Spinner } from '../Spinner';
 import { Text } from '../Text';
 import { resolveButtonPalette, useButtonStyles } from './Button.styles';
 import type { ButtonProps } from './Button.types';
@@ -61,7 +62,7 @@ export function Button({
         </View>
         {loading ? (
           <View style={styles.spinnerOverlay} pointerEvents="none">
-            <ActivityIndicator color={palette.content} size="small" />
+            <Spinner size="sm" color={palette.content} trackColor="progressHighlight" />
           </View>
         ) : null}
       </View>

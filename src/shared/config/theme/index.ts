@@ -1,3 +1,7 @@
+export * from './colorRoles';
+export { sharedAccentPalette, sharedFeedbackRoles, sharedThemeColors } from './palette';
+export * from './selectionPalette';
+export * from './statusPalette';
 export { sharedTokens } from './tokens';
 export * from './types';
 export { darkTheme } from './themes/dark';

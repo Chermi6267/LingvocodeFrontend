@@ -1,7 +1,7 @@
-import type { ThemeColor, ThemeTokens } from '@/shared/config/theme';
+import type { AccentTokenName, ThemeColor, ThemeTokens } from '@/shared/config/theme';
 
 export type ActionVariant = 'solid' | 'outline';
-export type ActionAccent = 'primary' | 'secondary' | 'danger' | 'warning' | 'streak' | 'legendary';
+export type ActionAccent = AccentTokenName;
 
 export interface ActionPalette {
   readonly face: ThemeColor;
@@ -13,8 +13,8 @@ export interface ActionPalette {
 }
 
 /**
- * Colour resolution for the legacy filled/outlined action surfaces used by
- * IconButton. Button uses the semantic variants from `Button.styles.ts`.
+ * Colour resolution for filled/outlined icon actions. Button uses the semantic
+ * variants from `Button.styles.ts`.
  */
 export function resolveActionPalette(
   tokens: ThemeTokens,

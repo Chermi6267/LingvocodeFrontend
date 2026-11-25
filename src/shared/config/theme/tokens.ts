@@ -145,11 +145,29 @@ export const sharedTokens: BaseThemeTokens = {
     iconButton: {
       size: 44,
     },
+    overlay: {
+      maxWidth: 560,
+      feedbackIconSize: 48,
+      enterOffsetY: 16,
+    },
+    form: {
+      maxWidth: 440,
+    },
+    control: {
+      hitTarget: 44,
+      indicator: 28,
+      switchWidth: 52,
+      switchHeight: 32,
+      switchThumb: 24,
+      sliderTrackHeight: 12,
+      sliderThumb: 28,
+      optionHeight: 44,
+    },
   },
   effects: {
+    /** Tactile depth is a hard edge: blur is disabled by design. */
     shadowBlur: 0,
     lipHeight: 4,
-    pressedOffsetY: 4,
   },
   motion: {
     press: {
@@ -161,8 +179,6 @@ export const sharedTokens: BaseThemeTokens = {
       easing: 'ease',
     },
     popIn: {
-      minDuration: 250,
-      maxDuration: 300,
       duration: 250,
       fromScale: 0.85,
       overshootScale: 1.03,
@@ -171,16 +187,49 @@ export const sharedTokens: BaseThemeTokens = {
     },
     spring: {
       duration: 250,
-      overshootScale: 1.03,
       easing: [0.34, 1.56, 0.64, 1],
     },
     progressFill: {
       duration: 400,
       easing: [0.34, 1.56, 0.64, 1],
     },
+    spinner: {
+      duration: 800,
+    },
+    skeleton: {
+      duration: 1000,
+      minOpacity: 0.5,
+    },
     shake: {
       duration: 300,
       offsets: [-6, 6, -4, 4, 0],
+    },
+    overlay: {
+      backdropIn: 150,
+      backdropOut: 160,
+      backdropRestore: 150,
+      contentIn: 120,
+    },
+    sheet: {
+      spring: {
+        damping: 22,
+        stiffness: 220,
+        mass: 0.9,
+      },
+      slideOut: 220,
+      maxHeightRatio: 0.85,
+      minVisibleRatio: 0.3,
+      dragStartThreshold: 4,
+      backdropFadeRatio: 0.6,
+      closeDistanceRatio: 0.28,
+      maxCloseDistance: 140,
+      closeVelocityThreshold: 1.1,
+    },
+    toast: {
+      enter: 180,
+      slideIn: 220,
+      duration: 3500,
+      hitSlop: 8,
     },
   },
 };

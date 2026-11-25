@@ -1,14 +1,16 @@
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   Platform,
   Pressable,
+  StyleSheet,
   type PressableProps,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import type { ThemeColor } from '@/shared/config/theme';
-import { usePressDepth } from '@/shared/lib/motion';
+import { resolveEasing, usePressDepth } from '@/shared/lib/motion';
 import { useTheme } from '@/shared/lib/theme';
 
 import { TactileLayers } from '../TactileLayers';
@@ -44,7 +46,6 @@ export interface Pressable3DProps extends Omit<PressableProps, 'children' | 'sty
 
   /** Optional hover surface colour (web/desktop pointers). */
   readonly hoverFaceColor?: ThemeColor;
-  readonly hoverBorderColor?: ThemeColor;
   /** Defaults to `tokens.colors.textPrimary` for a consistent contrast ring. */
   readonly focusRingColor?: ThemeColor;
 }
@@ -53,8 +54,8 @@ export interface Pressable3DProps extends Omit<PressableProps, 'children' | 'sty
  * Interactive Tactile 2.5D surface.
  *
  * Use it as the base for every pressable component: Button, IconButton,
- * ChoiceCard, etc. It owns press animation, hover, focus ring and a11y state
- * merging, so no component has to reimplement the lip.
+ * ChoiceCard, etc. It owns press animation, hover fade, focus ring and a11y
+ * state merging, so no component has to reimplement the lip.
  */
 export function Pressable3D({
   children,
@@ -68,7 +69,6 @@ export function Pressable3D({
   faceStyle,
   style,
   hoverFaceColor,
-  hoverBorderColor,
   focusRingColor,
   disabled = false,
   onPressIn,
@@ -81,7 +81,6 @@ export function Pressable3D({
   ...rest
 }: Pressable3DProps) {
   const { tokens } = useTheme();
-  const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
   const resolvedRadius = radius ?? tokens.radii.md;
@@ -94,6 +93,36 @@ export function Pressable3D({
     disabled: disabled || !shouldShowLip,
     lipHeight: resolvedLipHeight,
   });
+
+  const hoverProgress = useSharedValue(0);
+  const hoverOverlayStyle = useAnimatedStyle(() => ({ opacity: hoverProgress.get() }));
+  const hoverOverlayBaseStyle = useMemo<ViewStyle>(
+    () => ({
+      ...StyleSheet.absoluteFill,
+      backgroundColor: hoverFaceColor ?? faceColor,
+    }),
+    [faceColor, hoverFaceColor],
+  );
+
+  const fadeHover = useCallback(
+    (target: 0 | 1) => {
+      const { duration, easing } = tokens.motion.hover;
+
+      hoverProgress.set(
+        withTiming(target, {
+          duration: disabled ? 0 : duration,
+          easing: resolveEasing(easing),
+        }),
+      );
+    },
+    [disabled, hoverProgress, tokens.motion.hover],
+  );
+
+  useEffect(() => {
+    if (disabled) {
+      fadeHover(0);
+    }
+  }, [disabled, fadeHover]);
 
   const handlePressIn = useCallback<NonNullable<PressableProps['onPressIn']>>(
     (event) => {
@@ -113,18 +142,18 @@ export function Pressable3D({
 
   const handleHoverIn = useCallback<NonNullable<PressableProps['onHoverIn']>>(
     (event) => {
-      setIsHovered(true);
+      fadeHover(1);
       onHoverIn?.(event);
     },
-    [onHoverIn],
+    [fadeHover, onHoverIn],
   );
 
   const handleHoverOut = useCallback<NonNullable<PressableProps['onHoverOut']>>(
     (event) => {
-      setIsHovered(false);
+      fadeHover(0);
       onHoverOut?.(event);
     },
-    [onHoverOut],
+    [fadeHover, onHoverOut],
   );
 
   const handleFocus = useCallback<NonNullable<PressableProps['onFocus']>>(
@@ -142,10 +171,6 @@ export function Pressable3D({
     },
     [onBlur],
   );
-
-  const hoverActive = isHovered && !disabled;
-  const resolvedFaceColor = hoverActive && hoverFaceColor ? hoverFaceColor : faceColor;
-  const resolvedBorderColor = hoverActive && hoverBorderColor ? hoverBorderColor : borderColor;
 
   const focusStyle: ViewStyle | undefined =
     isFocused && !disabled
@@ -174,15 +199,22 @@ export function Pressable3D({
       accessibilityState={disabled ? { ...accessibilityState, disabled: true } : accessibilityState}
       style={[baseStyle, cursorStyle, style]}>
       <TactileLayers
-        faceColor={resolvedFaceColor}
+        faceColor={faceColor}
         lipColor={lipColor}
-        borderColor={resolvedBorderColor}
+        borderColor={borderColor}
         borderWidth={resolvedBorderWidth}
         radius={resolvedRadius}
         lipHeight={resolvedLipHeight}
         showLip={shouldShowLip}
         faceStyle={resolvedFaceStyle}
         animatedFaceStyle={animatedStyle}>
+        {hoverFaceColor ? (
+          <Animated.View
+            pointerEvents="none"
+            accessible={false}
+            style={[hoverOverlayBaseStyle, hoverOverlayStyle]}
+          />
+        ) : null}
         {children}
       </TactileLayers>
     </Pressable>

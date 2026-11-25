@@ -1,56 +1,33 @@
-# Welcome to your Expo app 👋
+# LingvocodeFrontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo Router-проект с UI-китом **Duolingo Tactile 2.5D**.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Запуск
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Доступные проверки:
 
-### Other setup steps
+```bash
+npm run typecheck
+npm run lint
+npm run format:check
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on [&#34;Using ESLint and Prettier&#34;](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on [&#34;Unit Testing with Jest&#34;](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on [&#34;Using TypeScript&#34;](https://docs.expo.dev/guides/typescript/)
+Скриптов `test` и `build` в проекте нет. Для проверки production-экспорта можно
+запустить `npx expo export --platform web`.
 
-## Learn more
+## Структура
 
-To learn more about developing your project with Expo, look at the following resources:
+- `src/shared/config/theme` — токены, палитры и реестр тем;
+- `src/shared/lib` — тема, стили, motion-хуки и a11y-хелперы;
+- `src/shared/ui` — компоненты, публичный API через `@/shared/ui`;
+- `src/screens`, `src/widgets`, `src/providers` — экраны и прикладные слои;
+- `src/app` — файловая маршрутизация Expo Router.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Подробное описание компонентов, механики 2.5D и правил расширения — в
+[`src/shared/ui/README.md`](src/shared/ui/README.md). Дизайн-спецификация — в
+[`duolingo_ui.txt`](duolingo_ui.txt).

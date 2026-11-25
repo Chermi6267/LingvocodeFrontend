@@ -7,6 +7,7 @@ import { useTheme } from '@/shared/lib/theme';
 export type NamedStyle = ViewStyle | TextStyle | ImageStyle;
 export type NamedStyles = Record<string, NamedStyle>;
 export type StyleFactory<T extends NamedStyles> = (tokens: ThemeTokens) => T;
+export type UseStyles<T extends NamedStyles> = () => T;
 
 /**
  * Creates a hook that turns theme tokens into a registered StyleSheet.
@@ -15,7 +16,7 @@ export type StyleFactory<T extends NamedStyles> = (tokens: ThemeTokens) => T;
  * active theme changes. This keeps theming out of inline style literals and
  * satisfies the `react-native/no-inline-styles` rule.
  */
-export function createStyles<T extends NamedStyles>(factory: StyleFactory<T>) {
+export function createStyles<T extends NamedStyles>(factory: StyleFactory<T>): UseStyles<T> {
   return function useStyles(): T {
     const { tokens } = useTheme();
 
